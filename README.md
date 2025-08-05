@@ -1,9 +1,8 @@
-# 🎯 Claude Slide Generator MCP Server
+# 🎯 Claude Slide Generator
 
-Claude Code용 AI 기반 슬라이드 생성 MCP 서버 - 완벽한 뷰포트 최적화와 함께
+Claude Code용 AI 기반 슬라이드 생성 명령어 - 완벽한 뷰포트 최적화와 함께
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![MCP](https://img.shields.io/badge/MCP-Compatible-blue.svg)](https://modelcontextprotocol.io)
 [![Claude Code](https://img.shields.io/badge/Powered%20by-Claude%20Code-blue.svg)](https://claude.ai/code)
 
 ## ✨ 주요 특징
@@ -14,64 +13,48 @@ Claude Code용 AI 기반 슬라이드 생성 MCP 서버 - 완벽한 뷰포트 �
 - 🌐 **reveal.js 기반** 전체화면 프레젠테이션
 - 🇰🇷 **한국어 최적화** 폰트 및 레이아웃
 - 📄 **PDF/PPT 변환 지원**
-- 🔧 **MCP 서버** - Claude Code 네이티브 통합
+- ⚡ **원클릭 설치** - 복잡한 설정 불필요
 
-## 🚀 설치 방법
+## 🚀 원클릭 설치 (30초 완료!)
 
-### 1단계: MCP 서버 설치
+### macOS/Linux
 ```bash
-npm install -g @reallygood83/claude-slide-mcp
+curl -fsSL https://raw.githubusercontent.com/reallygood83/claude-code-slide/main/install.sh | bash
 ```
 
-### 2단계: Claude Code 설정
-`~/.claude-code-mcp.json` 파일에 다음 내용 추가:
-
-```json
-{
-  "mcpServers": {
-    "claude-slide-generator": {
-      "command": "claude-slide-mcp",
-      "args": []
-    }
-  }
-}
+### Windows (Git Bash/WSL)
+```bash
+curl -fsSL https://raw.githubusercontent.com/reallygood83/claude-code-slide/main/install.sh | bash
 ```
 
-### 3단계: Claude Code 재시작
+### 수동 설치
 ```bash
-claude-code --restart
+# 저장소 클론
+git clone https://github.com/reallygood83/claude-code-slide.git
+cd claude-code-slide
+
+# 설치 스크립트 실행
+chmod +x install.sh
+./install.sh
 ```
 
 ## 🎯 사용법
 
-Claude Code에서 MCP 도구를 직접 호출:
+Claude Code에서 `슬라이드:` 명령어 사용:
 
 ### YouTube 슬라이드 생성
 ```
-YouTube 링크로 슬라이드를 생성해주세요:
-- 소스: https://www.youtube.com/watch?v=dQw4w9WgXcQ
-- 작성자: 김문정
-- 소속: 박달초등학교
+슬라이드: https://www.youtube.com/watch?v=dQw4w9WgXcQ, 김문정, 박달초등학교
 ```
 
 ### Markdown 슬라이드 생성
 ```
-Markdown 파일로 슬라이드를 생성해주세요:
-- 소스: ~/Documents/presentation.md
-- 작성자: 홍길동
-- 소속: ABC 회사
-- 테마: business
+슬라이드: ~/Documents/presentation.md, 홍길동, ABC회사, business
 ```
 
-### MCP 도구 직접 호출
-```typescript
-// Claude Code에서 자동으로 감지되어 사용 가능
-generate_slides({
-  source: "https://youtube.com/watch?v=abc123",
-  author: "김문정",
-  organization: "박달초등학교",
-  theme: "developer" // 선택사항
-})
+### 명령어 구조
+```
+슬라이드: [소스], [작성자명], [소속], [테마(선택)]
 ```
 
 ## 🎨 AI 테마 시스템
@@ -88,7 +71,7 @@ AI가 콘텐츠를 분석하여 최적의 테마를 자동 선택합니다:
 ### 수동 테마 지정
 원하는 테마를 직접 지정할 수도 있습니다:
 ```
-테마: business | developer | minimalist | creative | academic
+슬라이드: content.md, 김문정, 회사명, developer
 ```
 
 ## 📐 뷰포트 최적화 기술
@@ -111,34 +94,6 @@ AI가 콘텐츠를 분석하여 최적의 테마를 자동 선택합니다:
     margin-top: 0 !important;
 }
 ```
-
-## 📊 MCP 도구 명세
-
-### `generate_slides`
-HTML 슬라이드를 생성하는 주요 도구입니다.
-
-#### 입력 매개변수
-```typescript
-{
-  source: string;        // YouTube URL 또는 Markdown 파일 경로
-  author: string;        // 발표자 이름
-  organization: string;  // 소속 기관/회사명
-  theme?: string;        // 테마 (선택사항, AI 자동 선택)
-}
-```
-
-#### 출력 결과
-- 생성된 HTML 파일 경로
-- 적용된 테마 정보
-- 총 슬라이드 수
-- 사용 팁 및 PDF 변환 가이드
-
-## 🛠️ 기술 스택
-
-- **MCP SDK**: Model Context Protocol 서버
-- **reveal.js 4.3.1**: 프레젠테이션 프레임워크
-- **TypeScript**: 타입 안전성
-- **Node.js**: 런타임 환경
 
 ## 📁 생성 파일
 
@@ -166,44 +121,44 @@ HTML 슬라이드를 생성하는 주요 도구입니다.
 3. **대상**: PDF로 저장 선택
 4. **설정**: 여백 없음, 배경 그래픽 포함
 
-## 🤝 개발 및 기여
+## 🛠️ 기술 스택
 
-### 로컬 개발 환경 설정
+- **reveal.js 4.3.1**: 프레젠테이션 프레임워크
+- **Claude Code**: AI 기반 개발 환경
+- **Bash**: 자동 설치 스크립트
+
+## 📋 설치 과정
+
+### 자동 수행 작업
+1. **환경 확인**: Claude Code 설정 디렉토리 검색
+2. **CLAUDE.md 생성**: 없으면 자동 생성
+3. **명령어 추가**: 검증된 슬라이드 명령어 정의 추가
+4. **중복 방지**: 기존 명령어 감지 및 업데이트 확인
+
+### 설치 후 확인
 ```bash
-# 저장소 클론
-git clone https://github.com/reallygood83/claude-code-slide.git
-cd claude-code-slide
-
-# 의존성 설치
-npm install
-
-# 개발 모드 실행
-npm run dev
-
-# 빌드
-npm run build
+# Claude Code에서 테스트
+슬라이드: 테스트, 내이름, 내회사
 ```
 
-### MCP 서버 테스트
-```bash
-# 로컬에서 MCP 서버 시작
-npm start
+## 🔧 문제 해결
 
-# Claude Code 설정에서 로컬 경로 사용
-{
-  "mcpServers": {
-    "claude-slide-generator": {
-      "command": "node",
-      "args": ["./dist/index.js"]
-    }
-  }
-}
+### 설치 문제
+```bash
+# 권한 문제 시
+chmod +x install.sh
+sudo ./install.sh
 ```
+
+### 명령어 인식 안됨
+1. Claude Code 재시작
+2. `~/.claude/CLAUDE.md` 파일 확인
+3. "## 슬라이드: 명령어" 섹션 존재 확인
 
 ## 📝 변경 이력
 
 ### v1.0.0 (2025-08-05)
-- ✨ MCP 서버 첫 릴리스
+- ✨ 원클릭 설치 스크립트 구현
 - 🎨 AI 기반 테마 자동 선택
 - 📱 완벽한 뷰포트 최적화
 - 🇰🇷 한국어 폰트 최적화
@@ -223,10 +178,9 @@ MIT License - 자유롭게 사용, 수정, 배포 가능
 
 - **Claude Code 팀**: 훌륭한 AI 개발 환경 제공
 - **reveal.js**: 강력한 프레젠테이션 프레임워크
-- **MCP 프로토콜**: 확장 가능한 AI 도구 생태계
 
 ---
 
 **⭐ 이 프로젝트가 도움이 되셨다면 Star를 눌러주세요!**
 
-[🎯 MCP 서버 설치](https://www.npmjs.com/package/@reallygood83/claude-slide-mcp) | [📖 상세 가이드](https://github.com/reallygood83/claude-code-slide/wiki) | [🐛 버그 리포트](https://github.com/reallygood83/claude-code-slide/issues/new)
+[🚀 원클릭 설치](#원클릭-설치-30초-완료) | [📖 사용법](#사용법) | [🐛 버그 리포트](https://github.com/reallygood83/claude-code-slide/issues/new)
