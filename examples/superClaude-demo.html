@@ -1,0 +1,1132 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SuperClaude: Claude Code를 위한 스마트 프레임워크</title>
+    
+    <!-- Reveal.js CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.3.1/reveal.min.css">
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600&display=swap" rel="stylesheet">
+    
+    <!-- Highlight.js for syntax highlighting -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github-dark.min.css">
+    
+    <style>
+        /* Base HTML and Body setup */
+        html, body {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            box-sizing: border-box;
+        }
+        
+        *, *::before, *::after {
+            box-sizing: inherit;
+        }
+        
+        /* Developer Education Pro Theme */
+        :root {
+            --primary-color: #2563EB;
+            --secondary-color: #10B981;
+            --accent-color: #F59E0B;
+            --background-color: #F8FAFC;
+            --text-color: #1E293B;
+            --light-gray: #E2E8F0;
+            --border-color: #CBD5E1;
+        }
+        
+        .reveal {
+            font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            font-size: 18px; /* PPT 표준 본문 크기 */
+            font-weight: 400;
+            color: var(--text-color);
+            background: var(--background-color);
+        }
+        
+        .reveal .slides {
+            /* PPT 표준 16:9 최적화 */
+            width: 100%;
+            height: 100%;
+        }
+        
+        .reveal .slides section {
+            /* PPT 표준 패딩 및 레이아웃 - 상단 여백 최소화 */
+            padding: 5px 40px 20px 40px; /* 상단 패딩을 5px로 최소화 */
+            background: white;
+            text-align: left;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            align-items: stretch;
+            min-height: 100vh;
+            height: 100vh; /* 정확한 화면 높이 사용 */
+        }
+        
+        /* Headers - 상단 여백 완전 제거 */
+        .reveal h1, .reveal h2, .reveal h3 {
+            font-family: 'Pretendard', sans-serif;
+            font-weight: 700;
+            color: var(--primary-color);
+            text-transform: none;
+            line-height: 1.2;
+            margin-top: 0; /* 상단 마진 완전 제거 */
+        }
+        
+        .reveal h1 {
+            font-size: 2.44em; /* PPT 표준 44pt (44/18=2.44em) */
+            text-align: center;
+            margin: 0 0 0.3em 0; /* 상단 마진 완전 제거, 하단만 최소화 */
+            line-height: 1.1;
+        }
+        
+        .reveal h2 {
+            font-size: 1.78em; /* PPT 표준 32pt (32/18=1.78em) */
+            border-bottom: 3px solid var(--primary-color);
+            padding-bottom: 0.2em;
+            margin: 0 0 0.2em 0; /* 상단 마진 제거, 하단 마진 최소화 */
+            line-height: 1.2;
+        }
+        
+        .reveal h3 {
+            font-size: 1.33em; /* PPT 표준 24pt (24/18=1.33em) */
+            color: var(--secondary-color);
+            margin: 0 0 0.2em 0; /* 상단 마진 제거, 하단 마진 최소화 */
+            line-height: 1.3;
+        }
+        
+        /* Lists */
+        .reveal ul, .reveal ol {
+            margin-left: 1.5em; /* PPT 표준 들여쓰기 */
+            line-height: 1.6;
+        }
+        
+        .reveal li {
+            margin-bottom: 0.2em; /* 리스트 간격 더 줄임 */
+            font-size: 1em; /* 본문과 동일한 크기 */
+        }
+        
+        .reveal li::marker {
+            color: var(--primary-color);
+            font-weight: 600;
+        }
+        
+        /* Code blocks */
+        .reveal pre {
+            background: #1a202c;
+            border-radius: 12px;
+            padding: 15px; /* 패딩 더 줄임 */
+            margin: 10px 0; /* 마진 더 줄임 */
+            font-size: 1.0em;
+            line-height: 1.6;
+            border-left: 5px solid var(--accent-color);
+        }
+        
+        .reveal code {
+            font-family: 'JetBrains Mono', 'Consolas', monospace;
+            background: #f1f5f9;
+            padding: 4px 8px;
+            border-radius: 6px;
+            color: var(--primary-color);
+            font-weight: 500;
+        }
+        
+        .reveal pre code {
+            background: transparent;
+            padding: 0;
+            color: #e2e8f0;
+        }
+        
+        /* Emphasis boxes */
+        .feature-box {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 1.2em;
+            border-radius: 12px;
+            margin: 0.6em 0;
+            text-align: center;
+            font-weight: 500;
+            font-size: 1.1em; /* PPT 표준 크기 */
+        }
+        
+        .demo-box {
+            background: var(--light-gray);
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            padding: 1em;
+            margin: 0.6em 0;
+            border-left: 4px solid var(--accent-color);
+            font-size: 1em; /* PPT 표준 크기 */
+        }
+        
+        .warning-box {
+            background: #fef3c7;
+            border: 2px solid var(--accent-color);
+            border-radius: 12px;
+            padding: 18px;
+            margin: 15px 0;
+            font-size: 1.3em;
+        }
+        
+        /* Author info */
+        .author-info {
+            text-align: center;
+            margin-top: 40px;
+            padding: 25px;
+            background: var(--light-gray);
+            border-radius: 12px;
+            font-size: 1.3em;
+            color: var(--text-color);
+        }
+        
+        .author-info h3 {
+            color: var(--primary-color);
+            margin-bottom: 15px;
+            font-size: 1.8em;
+        }
+        
+        /* Progress indicators */
+        .progress-bar {
+            display: flex;
+            justify-content: center;
+            margin: 40px 0;
+            gap: 10px;
+        }
+        
+        .progress-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: var(--light-gray);
+        }
+        
+        .progress-dot.active {
+            background: var(--primary-color);
+        }
+        
+        /* Two column layout */
+        .two-column {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 60px;
+            align-items: start;
+        }
+        
+        /* Highlight spans */
+        .highlight {
+            background: var(--accent-color);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 6px;
+            font-weight: 600;
+        }
+        
+        .primary-highlight {
+            color: var(--primary-color);
+            font-weight: 600;
+        }
+        
+        .secondary-highlight {
+            color: var(--secondary-color);
+            font-weight: 600;
+        }
+        
+        /* Navigation arrows */
+        .reveal .controls button {
+            color: var(--primary-color);
+        }
+        
+        .reveal .progress {
+            background: var(--light-gray);
+        }
+        
+        .reveal .progress span {
+            background: var(--primary-color);
+        }
+        
+        /* Title slide special styling */
+        .title-slide {
+            text-align: center !important;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            justify-content: center;
+            align-items: center;
+            padding: 80px 60px;
+        }
+        
+        .title-slide h1 {
+            color: white;
+            font-size: 3em; /* 타이틀 슬라이드용 크기 조정 */
+            margin-bottom: 1em;
+            font-weight: 800;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+            line-height: 1.1;
+        }
+        
+        .title-slide .subtitle {
+            font-size: 1.4em; /* 부제목 크기 조정 */
+            margin-bottom: 2em;
+            opacity: 0.95;
+            font-weight: 300;
+            letter-spacing: 0.5px;
+        }
+        
+        .title-slide .author-info {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 20px;
+            padding: 40px;
+            margin-top: 60px;
+        }
+        
+        .title-slide .author-info h3 {
+            color: white;
+            font-size: 2.4em;
+            margin-bottom: 20px;
+            font-weight: 600;
+        }
+        
+        .title-slide .author-info p {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 1.6em;
+            line-height: 1.6;
+            margin: 0;
+        }
+        
+        /* Print styles */
+        @media print {
+            .reveal {
+                background: white;
+            }
+            
+            .reveal .slides section {
+                box-shadow: none;
+                border: 1px solid var(--border-color);
+                margin: 10px;
+                page-break-inside: avoid;
+            }
+        }
+        
+        /* 태블릿 최적화 */
+        @media (max-width: 1024px) {
+            .reveal {
+                font-size: 16px; /* 태블릿용 기본 크기 */
+            }
+            
+            .reveal .slides section {
+                padding: 40px;
+            }
+            
+            .two-column {
+                grid-template-columns: 1fr;
+                gap: 1.5em;
+            }
+            
+            .reveal h1 {
+                font-size: 2.2em; /* 비례 조정 */
+            }
+            
+            .reveal h2 {
+                font-size: 1.6em;
+            }
+            
+            .reveal h3 {
+                font-size: 1.25em;
+            }
+            
+            .title-slide h1 {
+                font-size: 2.5em;
+            }
+            
+            .title-slide .subtitle {
+                font-size: 1.3em;
+                margin-bottom: 1.5em;
+            }
+        }
+        
+        /* 모바일 최적화 */
+        @media (max-width: 768px) {
+            .reveal {
+                font-size: 14px; /* 모바일용 기본 크기 */
+            }
+            
+            .reveal .slides section {
+                padding: 30px;
+            }
+            
+            .reveal h1 {
+                font-size: 2em;
+            }
+            
+            .reveal h2 {
+                font-size: 1.5em;
+            }
+            
+            .reveal h3 {
+                font-size: 1.2em;
+            }
+            
+            .feature-box, .demo-box {
+                padding: 1em;
+                margin: 0.8em 0;
+            }
+            
+            .reveal pre {
+                padding: 1em;
+                font-size: 0.8em;
+            }
+            
+            .title-slide h1 {
+                font-size: 2.2em;
+            }
+            
+            .title-slide .subtitle {
+                font-size: 1.1em;
+                margin-bottom: 1.2em;
+            }
+            
+            /* 그리드 레이아웃 모바일 대응 */
+            div[style*="grid-template-columns: 1fr 1fr"] {
+                display: block !important;
+            }
+            
+            div[style*="grid-template-columns: 1fr 1fr 1fr"] {
+                display: block !important;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .reveal {
+                font-size: 18px;
+            }
+            
+            .reveal .slides section {
+                padding: 15px;
+                margin: 3px;
+                min-height: 70vh;
+            }
+            
+            .reveal h1 {
+                font-size: 2em;
+            }
+            
+            .reveal h2 {
+                font-size: 1.6em;
+            }
+            
+            .reveal h3 {
+                font-size: 1.3em;
+            }
+            
+            .title-slide h1 {
+                font-size: 2.2em;
+            }
+            
+            .title-slide .subtitle {
+                font-size: 1.1em;
+                margin-bottom: 30px;
+            }
+            
+            .title-slide .author-info {
+                padding: 20px;
+                margin-top: 25px;
+            }
+            
+            .title-slide .author-info h3 {
+                font-size: 1.4em;
+            }
+            
+            .title-slide .author-info p {
+                font-size: 1em;
+            }
+        }
+        
+        /* PPT 표준 반응형 최적화 */
+        @media screen and (min-width: 1024px) {
+            .reveal .slides section {
+                padding: 60px 80px; /* 큰 화면에서 충분한 여백 */
+            }
+        }
+        
+        /* 커스텀 스크롤바 디자인 */
+        .reveal .slides section::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        .reveal .slides section::-webkit-scrollbar-track {
+            background: rgba(37, 99, 235, 0.1);
+            border-radius: 4px;
+        }
+        
+        .reveal .slides section::-webkit-scrollbar-thumb {
+            background: linear-gradient(180deg, var(--primary-color), var(--secondary-color));
+            border-radius: 4px;
+        }
+        
+        .reveal .slides section::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(180deg, var(--secondary-color), var(--accent-color));
+        }
+        
+        /* Firefox 스크롤바 지원 */
+        .reveal .slides section {
+            scrollbar-width: thin;
+            scrollbar-color: var(--primary-color) rgba(37, 99, 235, 0.1);
+        }
+        
+        /* 화면 크기별 PPT 표준 최적화 */
+        @media screen and (max-height: 800px) {
+            .reveal .slides section {
+                height: 100vh;
+                padding: 40px;
+                font-size: 0.85em; /* 작은 화면에서 텍스트 더 작게 */
+            }
+            
+            .reveal h1 {
+                font-size: 2.8em;
+                margin-bottom: 15px;
+            }
+            
+            .reveal h2 {
+                font-size: 2.2em;
+                margin-bottom: 12px;
+            }
+            
+            .feature-box {
+                padding: 25px;
+                margin: 15px 0;
+                font-size: 1.1em;
+            }
+        }
+        
+        @media screen and (max-height: 720px) {
+            .reveal .slides section {
+                height: 100vh;
+                padding: 35px;
+                font-size: 0.8em; /* 더 작은 텍스트로 한 화면에 맞춤 */
+            }
+            
+            .reveal h1 {
+                font-size: 2.5em;
+                margin-bottom: 12px;
+            }
+            
+            .reveal h2 {
+                font-size: 2em;
+                margin-bottom: 10px;
+            }
+            
+            .feature-box {
+                padding: 20px;
+                margin: 12px 0;
+                font-size: 1em;
+            }
+            
+            .demo-box {
+                padding: 18px;
+                margin: 12px 0;
+            }
+        }
+        
+        @media screen and (max-height: 600px) {
+            .reveal .slides section {
+                height: 100vh;
+                padding: 25px;
+                font-size: 0.75em; /* 매우 작은 화면에서도 한 화면에 맞춤 */
+            }
+            
+            .reveal h1 {
+                font-size: 2.2em;
+                margin-bottom: 8px;
+            }
+            
+            .reveal h2 {
+                font-size: 1.8em;
+                margin-bottom: 8px;
+            }
+            
+            .feature-box {
+                padding: 18px;
+                margin: 8px 0;
+                font-size: 0.95em;
+            }
+            
+            .demo-box {
+                padding: 15px;
+                margin: 8px 0;
+            }
+        }
+        
+        /* High resolution displays */
+        @media screen and (min-width: 1920px) {
+            .reveal {
+                font-size: 40px;
+            }
+            
+            .reveal .slides section {
+                padding: 60px;
+                margin: 20px;
+            }
+        }
+    </style>
+</head>
+
+<body class="superClaude-presentation">
+    <div class="reveal">
+        <div class="slides">
+            
+            <!-- Slide 1: Title -->
+            <section class="title-slide">
+                <h1>SuperClaude</h1>
+                <p class="subtitle">Claude Code를 위한 스마트 프레임워크</p>
+                <div class="author-info">
+                    <h3>김문정</h3>
+                    <p>안양 박달초등학교<br>
+                    2025년 8월 5일</p>
+                </div>
+            </section>
+
+            <!-- Slide 2: 문제점과 해결책 -->
+            <section>
+                <h2>🤔 왜 SuperClaude가 필요할까요?</h2>
+                
+                <div class="two-column">
+                    <div>
+                        <h3>기존 Claude Code의 한계</h3>
+                        <ul>
+                            <li>매번 <span class="highlight">긴 프롬프트</span> 반복 입력</li>
+                            <li>MCP 서버 <span class="highlight">수동 선택</span>의 번거로움</li>
+                            <li>복잡한 작업의 <span class="highlight">단계별 관리</span> 어려움</li>
+                            <li>개발 역할별 <span class="highlight">전문성 부족</span></li>
+                        </ul>
+                    </div>
+                    
+                    <div>
+                        <h3>SuperClaude 해결책</h3>
+                        <ul>
+                            <li><span class="primary-highlight">커스텀 커맨드</span>로 자동화</li>
+                            <li><span class="primary-highlight">스마트 MCP 트리거</span></li>
+                            <li><span class="primary-highlight">체계적 워크플로우</span></li>
+                            <li><span class="primary-highlight">11개 전문 페르소나</span></li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="feature-box">
+                    💡 반복 작업을 자동화하고, 전문성을 높이는 똑똑한 프레임워크
+                </div>
+            </section>
+
+            <!-- Slide 3: 핵심 기능 개요 -->
+            <section>
+                <h2>⚡ SuperClaude 핵심 기능</h2>
+                
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 40px;">
+                    <div class="demo-box">
+                        <h3>🎯 커스텀 커맨드 시스템</h3>
+                        <ul>
+                            <li><code>sc design</code> - UI/UX 디자인</li>
+                            <li><code>sc implement</code> - 코드 구현</li>
+                            <li><code>sc analyze</code> - 코드 분석</li>
+                            <li><code>sc improve</code> - 코드 개선</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="demo-box">
+                        <h3>🤖 자동 MCP 트리거</h3>
+                        <ul>
+                            <li><strong>Context7</strong> - 라이브러리 문서</li>
+                            <li><strong>Sequential</strong> - 복잡한 분석</li>
+                            <li><strong>Magic</strong> - UI 컴포넌트</li>
+                            <li><strong>Playwright</strong> - E2E 테스트</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="demo-box">
+                        <h3>👥 11개 전문 페르소나</h3>
+                        <ul>
+                            <li>Frontend, Backend, Architect</li>
+                            <li>Security, Performance, QA</li>
+                            <li>DevOps, Analyzer, Refactorer</li>
+                            <li>Mentor, Scribe</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="demo-box">
+                        <h3>🚀 스마트 플래그 시스템</h3>
+                        <ul>
+                            <li><code>--plan</code> - 실행 계획 표시</li>
+                            <li><code>--think</code> - 심화 분석</li>
+                            <li><code>--ultrathink</code> - 최고 수준 분석</li>
+                            <li><code>--validate</code> - 검증 모드</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Slide 4: 커스텀 커맨드 시스템 -->
+            <section>
+                <h2>🎯 커스텀 커맨드 시스템</h2>
+                
+                <div class="demo-box">
+                    <h3>주요 개발 커맨드</h3>
+                    <pre><code class="bash"># UI/UX 디자인 및 구현
+sc design [domain] [flags]
+
+# 기능 및 코드 구현  
+sc implement [feature-description] [flags]
+
+# 코드 분석 및 조사
+sc analyze [target] [flags]
+
+# 코드 품질 개선
+sc improve [target] [flags]</code></pre>
+                </div>
+                
+                <div class="two-column">
+                    <div>
+                        <h3>🎨 Design 커맨드 활용</h3>
+                        <ul>
+                            <li><span class="primary-highlight">자동 페르소나:</span> Frontend + Architect</li>
+                            <li><span class="primary-highlight">MCP 연동:</span> Magic + Sequential</li>
+                            <li><span class="primary-highlight">기능:</span> UI 컴포넌트 생성, 디자인 시스템</li>
+                        </ul>
+                    </div>
+                    
+                    <div>
+                        <h3>⚙️ Implement 커맨드 활용</h3>
+                        <ul>
+                            <li><span class="primary-highlight">자동 페르소나:</span> 컨텍스트별 선택</li>
+                            <li><span class="primary-highlight">MCP 연동:</span> Context7 + Sequential</li>
+                            <li><span class="primary-highlight">기능:</span> 패턴 기반 구현</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="warning-box">
+                    <strong>💡 팁:</strong> 커맨드와 함께 <code>--plan</code> 플래그를 사용하면 실행 전 상세한 계획을 확인할 수 있습니다.
+                </div>
+            </section>
+
+            <!-- Slide 5: 자동 MCP 트리거 -->
+            <section>
+                <h2>🔄 자동 MCP 트리거 시스템</h2>
+                
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 40px; margin-bottom: 40px;">
+                    <div class="demo-box">
+                        <h3>🔍 Context7</h3>
+                        <p><strong>자동 활성화:</strong> 외부 라이브러리 감지 시</p>
+                        <ul>
+                            <li>공식 문서 검색</li>
+                            <li>코드 패턴 제공</li>
+                            <li>최신 가이드 참조</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="demo-box">
+                        <h3>🧠 Sequential</h3>
+                        <p><strong>자동 활성화:</strong> 복잡한 분석 작업 시</p>
+                        <ul>
+                            <li>체계적 문제 해결</li>
+                            <li>단계별 추론</li>
+                            <li>근본 원인 분석</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="demo-box">
+                        <h3>✨ Magic</h3>
+                        <p><strong>자동 활성화:</strong> UI 컴포넌트 요청 시</p>
+                        <ul>
+                            <li>21st.dev 컴포넌트</li>
+                            <li>모던 UI 패턴</li>
+                            <li>반응형 디자인</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="demo-box">
+                        <h3>🎭 Playwright</h3>
+                        <p><strong>자동 활성화:</strong> 테스트 작업 시</p>
+                        <ul>
+                            <li>E2E 테스트 자동화</li>
+                            <li>성능 모니터링</li>
+                            <li>크로스 브라우저 테스트</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="feature-box">
+                    🎯 적절한 시점에 필요한 MCP 서버가 자동으로 활성화되어 <br>
+                    더욱 정확하고 전문적인 결과를 제공합니다
+                </div>
+            </section>
+
+            <!-- Slide 6: 11개 페르소나 시스템 -->
+            <section>
+                <h2>👥 11개 전문 페르소나 시스템</h2>
+                
+                <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 30px;">
+                    <div class="demo-box">
+                        <h3>🎨 프론트엔드 전문가</h3>
+                        <ul>
+                            <li>UX/UI 최적화</li>
+                            <li>접근성 고려</li>
+                            <li>성능 최적화</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="demo-box">
+                        <h3>⚙️ 백엔드 전문가</h3>
+                        <ul>
+                            <li>API 설계</li>
+                            <li>데이터베이스 최적화</li>
+                            <li>보안 강화</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="demo-box">
+                        <h3>🏗️ 아키텍트</h3>
+                        <ul>
+                            <li>시스템 설계</li>
+                            <li>확장성 고려</li>
+                            <li>패턴 적용</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="demo-box">
+                        <h3>🔒 보안 전문가</h3>
+                        <ul>
+                            <li>취약점 분석</li>
+                            <li>보안 패턴</li>
+                            <li>컴플라이언스</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="demo-box">
+                        <h3>⚡ 성능 전문가</h3>
+                        <ul>
+                            <li>병목 지점 분석</li>
+                            <li>최적화 제안</li>
+                            <li>모니터링 설정</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="demo-box">
+                        <h3>🔍 분석가</h3>
+                        <ul>
+                            <li>근본 원인 추적</li>
+                            <li>체계적 조사</li>
+                            <li>증거 기반 분석</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="feature-box">
+                    🚀 작업 맥락에 따라 <span class="highlight">최적의 전문가가 자동 선택</span>되어 <br>
+                    도메인별 전문 지식을 제공합니다
+                </div>
+            </section>
+
+            <!-- Slide 7: 실습 1 - Admin 페이지 디자인 -->
+            <section>
+                <h2>🎨 실습 1: Admin 페이지 디자인</h2>
+                
+                <div class="demo-box">
+                    <h3>커맨드 실행</h3>
+                    <pre><code class="bash">sc design admin dashboard --plan</code></pre>
+                </div>
+                
+                <div class="two-column">
+                    <div>
+                        <h3>자동 활성화 요소</h3>
+                        <ul>
+                            <li><span class="primary-highlight">페르소나:</span> Frontend + Architect</li>
+                            <li><span class="primary-highlight">MCP:</span> Magic (UI 컴포넌트)</li>
+                            <li><span class="primary-highlight">플래그:</span> --plan (실행 계획)</li>
+                        </ul>
+                        
+                        <h3>생성 결과</h3>
+                        <ul>
+                            <li>모던 대시보드 레이아웃</li>
+                            <li>반응형 사이드바</li>
+                            <li>차트 및 통계 위젯</li>
+                            <li>사용자 관리 인터페이스</li>
+                        </ul>
+                    </div>
+                    
+                    <div>
+                        <h3>주요 컴포넌트</h3>
+                        <pre><code class="javascript">// 자동 생성된 컴포넌트 예시
+const AdminDashboard = () => {
+  return (
+    &lt;div className="admin-layout"&gt;
+      &lt;Sidebar /&gt;
+      &lt;MainContent&gt;
+        &lt;StatsCards /&gt;
+        &lt;ChartsSection /&gt;
+        &lt;UserTable /&gt;
+      &lt;/MainContent&gt;
+    &lt;/div&gt;
+  );
+};</code></pre>
+                    </div>
+                </div>
+                
+                <div class="warning-box">
+                    <strong>💡 Magic MCP의 힘:</strong> 21st.dev에서 최신 UI 패턴을 자동으로 검색하여 트렌디한 디자인을 제공합니다.
+                </div>
+            </section>
+
+            <!-- Slide 8: 실습 2 - 데이터베이스 연동 -->
+            <section>
+                <h2>⚙️ 실습 2: 데이터베이스 연동</h2>
+                
+                <div class="demo-box">
+                    <h3>커맨드 실행</h3>
+                    <pre><code class="bash">sc implement user authentication with database --sequential</code></pre>
+                </div>
+                
+                <div class="two-column">
+                    <div>
+                        <h3>자동 활성화 요소</h3>
+                        <ul>
+                            <li><span class="primary-highlight">페르소나:</span> Backend + Security</li>
+                            <li><span class="primary-highlight">MCP:</span> Context7 + Sequential</li>
+                            <li><span class="primary-highlight">기능:</span> 단계별 구현 가이드</li>
+                        </ul>
+                        
+                        <h3>구현 단계</h3>
+                        <ol>
+                            <li>데이터베이스 스키마 설계</li>
+                            <li>인증 미들웨어 구현</li>
+                            <li>API 엔드포인트 생성</li>
+                            <li>보안 검증 추가</li>
+                        </ol>
+                    </div>
+                    
+                    <div>
+                        <h3>생성된 코드 예시</h3>
+                        <pre><code class="javascript">// 자동 생성된 인증 로직
+const authMiddleware = async (req, res, next) => {
+  try {
+    const token = req.headers.authorization;
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    req.user = await User.findById(decoded.id);
+    next();
+  } catch (error) {
+    res.status(401).json({ error: 'Unauthorized' });
+  }
+};</code></pre>
+                    </div>
+                </div>
+                
+                <div class="feature-box">
+                    🔒 Sequential MCP가 복잡한 인증 로직을 단계별로 분석하고,<br>
+                    Security 페르소나가 보안 모범 사례를 적용합니다
+                </div>
+            </section>
+
+            <!-- Slide 9: 플래그와 고급 기능들 -->
+            <section>
+                <h2>🚀 플래그와 고급 기능들</h2>
+                
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 40px;">
+                    <div class="demo-box">
+                        <h3>🧠 사고 깊이 플래그</h3>
+                        <ul>
+                            <li><code>--think</code> - 다중 파일 분석 (4K 토큰)</li>
+                            <li><code>--think-hard</code> - 아키텍처 분석 (10K 토큰)</li>
+                            <li><code>--ultrathink</code> - 시스템 재설계 (32K 토큰)</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="demo-box">
+                        <h3>⚡ 효율성 플래그</h3>
+                        <ul>
+                            <li><code>--uc</code> - 토큰 압축 (30-50% 절약)</li>
+                            <li><code>--validate</code> - 사전 검증</li>
+                            <li><code>--safe-mode</code> - 보수적 실행</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="demo-box">
+                        <h3>🎯 전문 페르소나 플래그</h3>
+                        <ul>
+                            <li><code>--persona-architect</code> - 시스템 아키텍트</li>
+                            <li><code>--persona-security</code> - 보안 전문가</li>
+                            <li><code>--persona-performance</code> - 성능 전문가</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="demo-box">
+                        <h3>🔄 반복 개선 플래그</h3>
+                        <ul>
+                            <li><code>--loop</code> - 반복 개선 모드</li>
+                            <li><code>--iterations [n]</code> - 개선 횟수 설정</li>
+                            <li><code>--interactive</code> - 단계별 확인</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="feature-box">
+                    🎛️ 플래그 조합으로 <span class="highlight">맞춤형 워크플로우</span>를 구성하여<br>
+                    프로젝트 요구사항에 최적화된 결과를 얻을 수 있습니다
+                </div>
+                
+                <div class="warning-box">
+                    <strong>💡 고급 팁:</strong> <code>sc improve --loop --persona-performance --ultrathink</code> 조합으로 최고 수준의 성능 최적화가 가능합니다.
+                </div>
+            </section>
+
+            <!-- Slide 10: 결론 및 다음 단계 -->
+            <section>
+                <h2>🎯 결론 및 다음 단계</h2>
+                
+                <div class="two-column">
+                    <div>
+                        <h3>✅ SuperClaude의 핵심 가치</h3>
+                        <ul>
+                            <li><span class="primary-highlight">생산성 향상:</span> 반복 작업 자동화</li>
+                            <li><span class="primary-highlight">전문성 강화:</span> 도메인별 전문 지식</li>
+                            <li><span class="primary-highlight">품질 보장:</span> 체계적 검증 프로세스</li>
+                            <li><span class="primary-highlight">학습 촉진:</span> 단계별 설명과 가이드</li>
+                        </ul>
+                        
+                        <h3>🚀 즉시 시작하기</h3>
+                        <pre><code class="bash"># 첫 번째 프로젝트 시작
+sc design landing page --plan
+sc implement --validate
+sc improve --loop</code></pre>
+                    </div>
+                    
+                    <div>
+                        <h3>📈 다음 단계 학습 로드맵</h3>
+                        <ol>
+                            <li><strong>기본 커맨드 마스터:</strong> design, implement, analyze</li>
+                            <li><strong>플래그 시스템 활용:</strong> --think, --validate, --loop</li>
+                            <li><strong>페르소나 맞춤화:</strong> 프로젝트별 전문가 선택</li>
+                            <li><strong>고급 워크플로우:</strong> 복합 플래그 조합</li>
+                        </ol>
+                        
+                        <h3>📚 추가 리소스</h3>
+                        <ul>
+                            <li>SuperClaude 공식 문서</li>
+                            <li>커뮤니티 베스트 프랙티스</li>
+                            <li>예제 프로젝트 저장소</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="feature-box">
+                    🎉 SuperClaude와 함께 <span class="highlight">더 스마트하고 효율적인</span> 개발을 시작하세요!<br>
+                    질문이나 피드백은 언제든 환영합니다.
+                </div>
+                
+                <div class="author-info">
+                    <h3>감사합니다!</h3>
+                    <p><strong>김문정</strong> | 안양 박달초등학교<br>
+                    📧 jpmjkim23@gmail.com | 🗓️ 2025년 8월 5일</p>
+                </div>
+            </section>
+
+        </div>
+    </div>
+
+    <!-- Reveal.js JavaScript -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.3.1/reveal.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.3.1/plugin/highlight/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+
+    <script>
+        // Initialize Reveal.js
+        Reveal.initialize({
+            hash: true,
+            controls: true,
+            progress: true,
+            center: false,
+            transition: 'slide',
+            width: 1280, /* 16:9 최적화 */
+            height: 720,
+            margin: 0, /* 여백 완전 제거 */
+            minScale: 0.2,
+            maxScale: 1.5,
+            embedded: false,
+            touch: true,
+            loop: false,
+            rtl: false,
+            shuffle: false,
+            fragments: true,
+            fragmentInURL: false,
+            help: true,
+            showNotes: false,
+            autoPlayMedia: null,
+            preloadIframes: null,
+            autoSlide: 0,
+            autoSlideStoppable: true,
+            mouseWheel: false,
+            hideInactiveCursor: true,
+            hideCursorTime: 5000,
+            
+            plugins: [RevealHighlight],
+            
+            // Highlight.js settings
+            highlight: {
+                highlightOnLoad: true,
+                escapeHTML: false
+            },
+            
+            // Keyboard shortcuts
+            keyboard: {
+                32: null, // Don't hijack space bar
+                37: 'prev', // Left arrow
+                39: 'next', // Right arrow
+                38: 'prev', // Up arrow  
+                40: 'next'  // Down arrow
+            }
+        });
+
+        // Custom functionality
+        Reveal.on('ready', function() {
+            console.log('SuperClaude 프레젠테이션이 준비되었습니다!');
+            
+            // Add slide numbers to progress indicators
+            updateProgressIndicators();
+        });
+
+        Reveal.on('slidechanged', function(event) {
+            updateProgressIndicators();
+        });
+
+        function updateProgressIndicators() {
+            const currentSlide = Reveal.getIndices().h;
+            const totalSlides = Reveal.getTotalSlides();
+            
+            // Update any progress indicators if they exist
+            const progressDots = document.querySelectorAll('.progress-dot');
+            progressDots.forEach((dot, index) => {
+                dot.classList.toggle('active', index <= currentSlide);
+            });
+        }
+
+        // Print styles activation
+        function optimizeForPrint() {
+            document.body.classList.add('print-mode');
+            window.print();
+        }
+
+        // Accessibility improvements
+        document.addEventListener('DOMContentLoaded', function() {
+            // Add ARIA labels
+            const slides = document.querySelectorAll('.slides section');
+            slides.forEach((slide, index) => {
+                slide.setAttribute('aria-label', `Slide ${index + 1}`);
+            });
+        });
+    </script>
+</body>
+</html>
